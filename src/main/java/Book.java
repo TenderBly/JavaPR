@@ -4,8 +4,7 @@ import java.util.Objects;
  * Class representing a book in the library.
  */
 public class Book {
-    // Static field to count total created Book objects
-    private static int bookCount = 0;
+
 
     private String title;
     private String author;
@@ -22,7 +21,6 @@ public class Book {
         setYear(year);
         setPrice(price);
         setGenre(genre);
-        bookCount++; // Increment counter on creation
     }
 
     /**
@@ -38,14 +36,6 @@ public class Book {
         this.year = other.year;
         this.price = other.price;
         this.genre = other.genre;
-        bookCount++; // Increment counter on copy creation
-    }
-
-    /**
-     * Static method to get the total number of created books.
-     */
-    public static int getBookCount() {
-        return bookCount;
     }
 
     public String getTitle() { return title; }
