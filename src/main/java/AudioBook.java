@@ -4,6 +4,7 @@ public class AudioBook extends Book {
 
     public AudioBook(String title, String author, int year, double price, Genre genre, String narrator, int durationMinutes) {
         super(title, author, year, price, genre);
+        this.type = "AudioBook";
         setNarrator(narrator);
         setDurationMinutes(durationMinutes);
     }

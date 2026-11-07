@@ -4,6 +4,7 @@ public class InteractiveEBook extends EBook {
 
     public InteractiveEBook(String title, String author, int year, double price, Genre genre, double fileSizeMB, String fileFormat, boolean hasVideoContent, boolean hasQuizzes) {
         super(title, author, year, price, genre, fileSizeMB, fileFormat);
+        this.type = "InteractiveEBook";
         this.hasVideoContent = hasVideoContent;
         this.hasQuizzes = hasQuizzes;
     }

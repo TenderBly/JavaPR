@@ -4,6 +4,7 @@ public class PaperBook extends Book {
 
     public PaperBook(String title, String author, int year, double price, Genre genre, int pageCount, double weightKg) {
         super(title, author, year, price, genre);
+        this.type = "PaperBook";
         setPageCount(pageCount);
         setWeightKg(weightKg);
     }
