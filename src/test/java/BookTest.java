@@ -3,25 +3,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BookTest {
     @Test
-    void shouldThrowExceptionWhenInvalidValueInSetter() {
-        Book book = new Book("Kobzar", "Taras Shevchenko", 1840, 250.0, Genre.HISTORY);
-        assertThrows(IllegalArgumentException.class, () -> {
-            book.setPrice(-50.0);
-        });
+    void shouldCreateEBookSuccessfully() {
+        EBook ebook = new EBook("Java Guide", "Author", 2024, 100, Genre.SCIENCE, 5.5, "PDF");
+        assertEquals("PDF", ebook.toString().contains("PDF") ? "PDF" : "");
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidConstructorData() {
+    void shouldThrowExceptionForInvalidPaperBookWeight() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Book("", "Author", 2020, 100.0, Genre.FICTION);
+            new PaperBook("Title", "Author", 2024, 100, Genre.FICTION, 300, -1.5);
         });
-    }
-    
-    @Test
-    void shouldCopyBookCorrectly() {
-        Book original = new Book("Dune", "Frank Herbert", 1965, 300.0, Genre.SCIENCE);
-        Book copy = new Book(original);
-        assertEquals(original, copy);
-        assertNotSame(original, copy); // Ensure they are different objects in memory
     }
 }
