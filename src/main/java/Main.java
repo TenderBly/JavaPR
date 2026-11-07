@@ -4,18 +4,22 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Book> library = new ArrayList<>();
+        
+        // Load data from file at startup
+        ArrayList<Book> library = FileHandler.loadFromJson();
 
         while (true) {
             System.out.println("\n--- MAIN MENU ---");
             System.out.println("1. Create new object (Book)");
             System.out.println("2. Display all objects");
-            System.out.println("3. Exit");
+            System.out.println("3. Exit and Save");
             System.out.print("Choose action: ");
 
             String choice = scanner.nextLine().trim();
 
             if (choice.equals("3")) {
+                // Save data to file before exiting
+                FileHandler.saveToJson(library);
                 System.out.println("Program terminated. Goodbye!");
                 break;
             }
