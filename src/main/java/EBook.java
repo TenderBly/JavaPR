@@ -4,6 +4,7 @@ public class EBook extends Book {
 
     public EBook(String title, String author, int year, double price, Genre genre, double fileSizeMB, String fileFormat) {
         super(title, author, year, price, genre);
+        this.type = "EBook";
         setFileSizeMB(fileSizeMB);
         setFileFormat(fileFormat);
     }
