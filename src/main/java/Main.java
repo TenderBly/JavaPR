@@ -7,11 +7,11 @@ public class Main {
         int count = 0;
 
         while (true) {
-            System.out.println("\n--- МЕНЮ ---");
-            System.out.println("1. Створити новий об'єкт (книгу)");
-            System.out.println("2. Вивести інформацію про всі об'єкти");
-            System.out.println("3. Завершити роботу");
-            System.out.print("Оберіть дію: ");
+            System.out.println("\n--- MENU ---");
+            System.out.println("1. Create new object (book)");
+            System.out.println("2. Display information about all objects");
+            System.out.println("3. Exit");
+            System.out.print("Choose action: ");
 
             String choice = scanner.nextLine().trim();
 
@@ -19,31 +19,31 @@ public class Main {
                 switch (choice) {
                     case "1":
                         if (count >= library.length) {
-                            System.out.println("Помилка: Бібліотека заповнена (максимум 5 книг).");
+                            System.out.println("Error: Library is full (maximum 5 books).");
                             break;
                         }
-                        System.out.print("Введіть назву: ");
+                        System.out.print("Enter title: ");
                         String title = scanner.nextLine();
                         
-                        System.out.print("Введіть автора: ");
+                        System.out.print("Enter author: ");
                         String author = scanner.nextLine();
                         
-                        System.out.print("Введіть рік видання: ");
+                        System.out.print("Enter publication year: ");
                         int year = Integer.parseInt(scanner.nextLine().trim());
                         
-                        System.out.print("Введіть ціну: ");
+                        System.out.print("Enter price: ");
                         double price = Double.parseDouble(scanner.nextLine().trim());
                         
                         library[count] = new Book(title, author, year, price);
                         count++;
-                        System.out.println("Книгу успішно додано!");
+                        System.out.println("Book added successfully!");
                         break;
 
                     case "2":
                         if (count == 0) {
-                            System.out.println("Бібліотека наразі порожня.");
+                            System.out.println("Library is currently empty.");
                         } else {
-                            System.out.println("\nСписок книг:");
+                            System.out.println("\nList of books:");
                             for (int i = 0; i < count; i++) {
                                 System.out.println(library[i].toString());
                             }
@@ -51,19 +51,19 @@ public class Main {
                         break;
 
                     case "3":
-                        System.out.println("Робота завершена. До побачення!");
+                        System.out.println("Program terminated. Goodbye!");
                         scanner.close();
                         return;
 
                     default:
-                        System.out.println("Некоректний вибір. Введіть 1, 2 або 3.");
+                        System.out.println("Invalid choice. Please enter 1, 2, or 3.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Помилка вводу: для року та ціни очікується числове значення.");
+                System.out.println("Input error: a numeric value is expected for year and price.");
             } catch (IllegalArgumentException e) {
-                System.out.println("Помилка валідації: " + e.getMessage());
+                System.out.println("Validation error: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Сталася непередбачена помилка: " + e.getMessage());
+                System.out.println("An unexpected error occurred: " + e.getMessage());
             }
         }
     }
