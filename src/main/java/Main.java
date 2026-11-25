@@ -14,12 +14,13 @@ public class Main {
             System.out.println("1. Search object");
             System.out.println("2. Add new book (with quantity)");
             System.out.println("3. Display all objects");
-            System.out.println("4. Exit and Save");
+            System.out.println("4. Display sorted information about all books");
+            System.out.println("5. Exit and Save");
             System.out.print("Choose action: ");
 
             String choice = scanner.nextLine().trim();
 
-            if (choice.equals("4")) {
+            if (choice.equals("5")) {
                 FileHandler.saveLibrary(library);
                 System.out.println("Program terminated. Goodbye!");
                 break;
@@ -29,8 +30,10 @@ public class Main {
                 createNewObjectMenu(scanner, library);
             } else if (choice.equals("3")) {
                 library.displayAllBooks();
+            } else if (choice.equals("4")) {
+                library.displaySortedBooks();
             } else {
-                System.out.println("Invalid choice. Please enter 1, 2, 3, or 4.");
+                System.out.println("Invalid choice. Please enter 1, 2, 3, 4, or 5.");
             }
         }
         scanner.close();
@@ -111,16 +114,20 @@ public class Main {
 
     private static void createNewObjectMenu(Scanner scanner, Library library) {
         System.out.println("\n--- ADD NEW BOOK ---");
-        System.out.println("1. Regular Book");
-        System.out.println("2. E-Book");
-        System.out.println("3. Paper Book");
-        System.out.println("4. Audio Book");
-        System.out.println("5. Interactive E-Book");
-        System.out.println("6. Back to main menu");
+        System.out.println("1. E-Book");
+        System.out.println("2. Paper Book");
+        System.out.println("3. Audio Book");
+        System.out.println("4. Interactive E-Book");
+        System.out.println("5. Back to main menu");
         System.out.print("Select type: ");
 
         String typeChoice = scanner.nextLine().trim();
-        if (typeChoice.equals("6")) return;
+        if (typeChoice.equals("5")) return;
+
+        if (!typeChoice.equals("1") && !typeChoice.equals("2") && !typeChoice.equals("3") && !typeChoice.equals("4")) {
+            System.out.println("Invalid type selected.");
+            return;
+        }
 
         try {
             System.out.print("Enter title: ");
@@ -133,35 +140,36 @@ public class Main {
             double price = Double.parseDouble(scanner.nextLine().trim());
             System.out.print("Choose genre (1-FICTION, 2-NON_FICTION, 3-SCIENCE, 4-HISTORY, 5-FANTASY): ");
             int gChoice = Integer.parseInt(scanner.nextLine().trim());
+            if (gChoice < 1 || gChoice > Genre.values().length) {
+                System.out.println("Invalid genre number.");
+                return;
+            }
             Genre genre = Genre.values()[gChoice - 1];
 
             Book newBook = null;
             switch (typeChoice) {
                 case "1":
-                    newBook = new Book(title, author, year, price, genre);
-                    break;
-                case "2":
                     System.out.print("Enter file size (MB): ");
                     double size = Double.parseDouble(scanner.nextLine().trim());
                     System.out.print("Enter format: ");
                     String format = scanner.nextLine();
                     newBook = new EBook(title, author, year, price, genre, size, format);
                     break;
-                case "3":
+                case "2":
                     System.out.print("Enter page count: ");
                     int pages = Integer.parseInt(scanner.nextLine().trim());
                     System.out.print("Enter weight (kg): ");
                     double weight = Double.parseDouble(scanner.nextLine().trim());
                     newBook = new PaperBook(title, author, year, price, genre, pages, weight);
                     break;
-                case "4":
+                case "3":
                     System.out.print("Enter narrator name: ");
                     String narrator = scanner.nextLine();
                     System.out.print("Enter duration (minutes): ");
                     int duration = Integer.parseInt(scanner.nextLine().trim());
                     newBook = new AudioBook(title, author, year, price, genre, narrator, duration);
                     break;
-                case "5":
+                case "4":
                     System.out.print("Enter file size (MB): ");
                     double iSize = Double.parseDouble(scanner.nextLine().trim());
                     System.out.print("Enter format: ");
@@ -172,15 +180,14 @@ public class Main {
                     boolean hasQuizzes = Boolean.parseBoolean(scanner.nextLine().trim());
                     newBook = new InteractiveEBook(title, author, year, price, genre, iSize, iFormat, hasVideo, hasQuizzes);
                     break;
-                default:
-                    System.out.println("Invalid type selected.");
-                    return;
             }
 
             System.out.print("Enter quantity: ");
             int quantity = Integer.parseInt(scanner.nextLine().trim());
             library.addNewBook(newBook, quantity);
             System.out.println("Book added/updated successfully!");
+        } catch (NumberFormatException e) {
+            System.out.println("Input error: numeric value expected.");
         } catch (Exception e) {
             System.out.println("Error creating object: " + e.getMessage());
         }
