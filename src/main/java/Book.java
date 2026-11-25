@@ -1,10 +1,12 @@
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Abstract base class representing a book in the library.
- * Implements Comparable for deterministic sorting by title, author, year, and price.
+ * Implements Comparable for deterministic sorting and Identifiable for UUID support.
  */
-public abstract class Book implements Comparable<Book> {
+public abstract class Book implements Comparable<Book>, Identifiable {
+    private UUID uuid;
     protected String type;
     private String title;
     private String author;
@@ -13,10 +15,12 @@ public abstract class Book implements Comparable<Book> {
     private Genre genre;
 
     public Book() {
+        this.uuid = UUID.randomUUID();
         this.type = "Book";
     }
 
     public Book(String title, String author, int year, double price, Genre genre) {
+        this.uuid = UUID.randomUUID();
         this.type = "Book";
         setTitle(title);
         setAuthor(author);
@@ -29,6 +33,7 @@ public abstract class Book implements Comparable<Book> {
         if (other == null) {
             throw new IllegalArgumentException("Cannot copy from a null object.");
         }
+        this.uuid = UUID.randomUUID();
         this.type = other.type;
         this.title = other.title;
         this.author = other.author;
@@ -37,8 +42,21 @@ public abstract class Book implements Comparable<Book> {
         this.genre = other.genre;
     }
 
-    public String getType() { return type; }
-    public String getTitle() { return title; }
+    @Override
+    public UUID getUuid() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID();
+        }
+        return this.uuid;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 
     public void setTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
@@ -47,7 +65,9 @@ public abstract class Book implements Comparable<Book> {
         this.title = title;
     }
 
-    public String getAuthor() { return author; }
+    public String getAuthor() {
+        return author;
+    }
 
     public void setAuthor(String author) {
         if (author == null || author.trim().isEmpty()) {
@@ -56,7 +76,9 @@ public abstract class Book implements Comparable<Book> {
         this.author = author;
     }
 
-    public int getYear() { return year; }
+    public int getYear() {
+        return year;
+    }
 
     public void setYear(int year) {
         if (year <= 0 || year > 2026) {
@@ -65,7 +87,9 @@ public abstract class Book implements Comparable<Book> {
         this.year = year;
     }
 
-    public double getPrice() { return price; }
+    public double getPrice() {
+        return price;
+    }
 
     public void setPrice(double price) {
         if (price <= 0) {
@@ -74,13 +98,19 @@ public abstract class Book implements Comparable<Book> {
         this.price = price;
     }
 
-    public Genre getGenre() { return genre; }
+    public Genre getGenre() {
+        return genre;
+    }
 
     public void setGenre(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre cannot be null.");
         }
         this.genre = genre;
+    }
+
+    public String toShortString() {
+        return type + ": " + title + " | UUID: " + getUuid();
     }
 
     @Override
@@ -109,7 +139,7 @@ public abstract class Book implements Comparable<Book> {
 
     @Override
     public String toString() {
-        return "Book{type='" + type + "', title='" + title + "', author='" + author +
+        return "Book{uuid=" + getUuid() + ", type='" + type + "', title='" + title + "', author='" + author +
                "', year=" + year + ", price=" + price + ", genre=" + genre + '}';
     }
 
