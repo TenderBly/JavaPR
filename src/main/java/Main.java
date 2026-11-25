@@ -116,14 +116,12 @@ public class Main {
             System.out.println("2. Search by author");
             System.out.println("3. Search by genre");
             System.out.println("4. Search by maximum price");
-            System.out.println("5. Back to main menu");
+            System.out.println("5. Search by UUID");
+            System.out.println("6. Back to main menu");
             System.out.print("Select search criterion: ");
 
             String choice = scanner.nextLine().trim();
-            if (choice.equals("5")) {
-                return;
-            }
-
+                    if (choice.equals("6")) { return; }
             try {
                 ArrayList<LibraryItem> results = null;
                 switch (choice) {
@@ -153,6 +151,21 @@ public class Main {
                         }
                         results = library.searchByMaxPrice(maxPrice);
                         break;
+                        case "5":
+                        System.out.print("Enter UUID: ");
+                        String uuidInput = scanner.nextLine().trim();
+                        try {
+                            LibraryItem foundItem = library.searchByUuid(uuidInput);
+                            if (foundItem == null) {
+                                System.out.println("Book with UUID " + uuidInput + " not found.");
+                            } else {
+                                System.out.println("\nFound object:");
+                                System.out.println(foundItem.toString());
+                            }
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Invalid UUID format: " + uuidInput);
+                        }
+                        continue;
                     default:
                         System.out.println("Invalid choice. Please enter 1-5.");
                         continue;

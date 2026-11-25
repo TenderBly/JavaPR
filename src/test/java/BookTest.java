@@ -79,4 +79,29 @@ class BookTest {
         assertEquals(1965, sorted.get(1).getBook().getYear());
         assertEquals(1840, sorted.get(2).getBook().getYear());
     }
+    @Test
+    void shouldAssignUniqueUuidAndFindByUuid() {
+        Library library = new Library("Test Library", "Main St");
+        EBook ebook = new EBook("Dune", "Frank Herbert", 1965, 200.0, Genre.FANTASY, 3.2, "EPUB");
+        PaperBook paper = new PaperBook("Kobzar", "Taras Shevchenko", 1840, 150.0, Genre.HISTORY, 400, 0.5);
+
+        assertNotNull(ebook.getUuid());
+        assertNotNull(paper.getUuid());
+        assertNotEquals(ebook.getUuid(), paper.getUuid());
+
+        library.addNewBook(ebook, 2);
+        library.addNewBook(paper, 1);
+
+        LibraryItem found = library.searchByUuid(ebook.getUuid().toString());
+        assertNotNull(found);
+        assertEquals("Dune", found.getBook().getTitle());
+    }
+
+    @Test
+    void shouldThrowExceptionForInvalidUuidFormat() {
+        Library library = new Library("Test Library", "Main St");
+        assertThrows(IllegalArgumentException.class, () -> {
+            library.searchByUuid("not-a-valid-uuid");
+        });
+    }
 }

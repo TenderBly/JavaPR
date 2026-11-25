@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.UUID;
 
 /**
  * Container class representing a library that aggregates Book items and their quantities.
@@ -170,5 +171,22 @@ public class Library {
         for (LibraryItem item : sorted) {
             System.out.println(item.toString());
         }
+    }
+
+    /**
+     * Finds a LibraryItem by its Book UUID string.
+     * Throws IllegalArgumentException if the UUID string format is invalid.
+     */
+    public LibraryItem searchByUuid(String uuidText) {
+        if (uuidText == null || uuidText.trim().isEmpty()) {
+            throw new IllegalArgumentException("UUID cannot be empty.");
+        }
+        UUID targetUuid = UUID.fromString(uuidText.trim());
+        for (LibraryItem item : items) {
+            if (item.getBook().getUuid().equals(targetUuid)) {
+                return item;
+            }
+        }
+        return null;
     }
 }
