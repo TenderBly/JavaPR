@@ -104,4 +104,52 @@ class BookTest {
             library.searchByUuid("not-a-valid-uuid");
         });
     }
+
+    @Test
+    void shouldUpdateExistingBookInLibrary() {
+        Library library = new Library("Test Library", "Main St");
+        EBook original = new EBook("Dune", "Frank Herbert", 1965, 200.0, Genre.FANTASY, 3.2, "EPUB");
+        EBook updated = new EBook("Dune Messiah", "Frank Herbert", 1969, 250.0, Genre.FANTASY, 3.2, "EPUB");
+
+        library.addNewBook(original, 3);
+        boolean result = library.update(original, updated);
+
+        assertTrue(result);
+        assertEquals(1, library.getItems().size());
+        assertEquals("Dune Messiah", library.getItems().get(0).getBook().getTitle());
+        assertEquals(250.0, library.getItems().get(0).getBook().getPrice());
+        assertEquals(Integer.valueOf(3), library.getItems().get(0).getQuantity());
+    }
+
+    @Test
+    void shouldReturnFalseWhenUpdatingNonExistentBook() {
+        Library library = new Library("Test Library", "Main St");
+        EBook missing = new EBook("Unknown", "Author", 2020, 100.0, Genre.FICTION, 1.0, "PDF");
+        EBook replacement = new EBook("New Title", "Author", 2021, 120.0, Genre.FICTION, 1.0, "PDF");
+
+        assertFalse(library.update(missing, replacement));
+    }
+
+    @Test
+    void shouldDeleteExistingBookFromLibrary() {
+        Library library = new Library("Test Library", "Main St");
+        PaperBook book1 = new PaperBook("Kobzar", "Taras Shevchenko", 1840, 150.0, Genre.HISTORY, 400, 0.5);
+        EBook book2 = new EBook("Dune", "Frank Herbert", 1965, 200.0, Genre.FANTASY, 3.2, "EPUB");
+
+        library.addNewBook(book1, 2);
+        library.addNewBook(book2, 1);
+
+        boolean deleted = library.delete(book1);
+        assertTrue(deleted);
+        assertEquals(1, library.getItems().size());
+        assertEquals("Dune", library.getItems().get(0).getBook().getTitle());
+    }
+
+    @Test
+    void shouldReturnFalseWhenDeletingNonExistentBook() {
+        Library library = new Library("Test Library", "Main St");
+        PaperBook missing = new PaperBook("Kobzar", "Taras Shevchenko", 1840, 150.0, Genre.HISTORY, 400, 0.5);
+
+        assertFalse(library.delete(missing));
+    }
 }
