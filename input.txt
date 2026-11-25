@@ -1,0 +1,26 @@
+[
+  {
+    "book": {
+      "type": "Book",
+      "title": "Clean Code",
+      "author": "Robert Martin",
+      "year": 2008,
+      "price": 450.0,
+      "genre": "SCIENCE"
+    },
+    "quantity": 3
+  },
+  {
+    "book": {
+      "type": "EBook",
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "year": 1965,
+      "price": 200.0,
+      "genre": "FANTASY",
+      "fileSizeMB": 3.2,
+      "fileFormat": "EPUB"
+    },
+    "quantity": 5
+  }
+]
