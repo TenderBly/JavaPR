@@ -31,7 +31,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     public Book(Book other) {
         if (other == null) {
-            throw new IllegalArgumentException("Cannot copy from a null object.");
+            throw new InvalidFieldValueException("Cannot copy from a null object.");
         }
         this.uuid = UUID.randomUUID();
         this.type = other.type;
@@ -60,7 +60,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     public void setTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be empty.");
+            throw new InvalidFieldValueException("Title cannot be empty.");
         }
         this.title = title;
     }
@@ -71,7 +71,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     public void setAuthor(String author) {
         if (author == null || author.trim().isEmpty()) {
-            throw new IllegalArgumentException("Author cannot be empty.");
+            throw new InvalidFieldValueException("Author cannot be empty.");
         }
         this.author = author;
     }
@@ -82,7 +82,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     public void setYear(int year) {
         if (year <= 0 || year > 2026) {
-            throw new IllegalArgumentException("Invalid year.");
+            throw new InvalidFieldValueException("Invalid publication year: " + year + ". Must be between 1 and 2026.");
         }
         this.year = year;
     }
@@ -93,7 +93,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     public void setPrice(double price) {
         if (price <= 0) {
-            throw new IllegalArgumentException("Price must be > 0.");
+            throw new InvalidFieldValueException("Price must be greater than zero. Provided: " + price);
         }
         this.price = price;
     }
@@ -104,7 +104,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     public void setGenre(Genre genre) {
         if (genre == null) {
-            throw new IllegalArgumentException("Genre cannot be null.");
+            throw new InvalidFieldValueException("Genre cannot be null.");
         }
         this.genre = genre;
     }

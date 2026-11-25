@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.UUID;
 
 /**
- * Container class representing a library that aggregates Book items and their quantities.
+ * Container class managing a collection of LibraryItem objects.
  */
 public class Library {
     private String name;
@@ -13,10 +13,10 @@ public class Library {
 
     public Library(String name, String address) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Library name cannot be empty.");
+            throw new InvalidFieldValueException("Library name cannot be empty.");
         }
         if (address == null || address.trim().isEmpty()) {
-            throw new IllegalArgumentException("Library address cannot be empty.");
+            throw new InvalidFieldValueException("Library address cannot be empty.");
         }
         this.name = name;
         this.address = address;
@@ -39,15 +39,12 @@ public class Library {
         return items.isEmpty();
     }
 
-    /**
-     * Adds a book to the library or increases its quantity if it already exists.
-     */
     public void addNewBook(Book bk, int quantity) {
         if (bk == null) {
-            throw new IllegalArgumentException("Book cannot be null.");
+            throw new InvalidFieldValueException("Book cannot be null.");
         }
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero.");
+            throw new InvalidFieldValueException("Quantity must be greater than zero. Provided: " + quantity);
         }
 
         for (LibraryItem item : items) {
@@ -59,55 +56,38 @@ public class Library {
         items.add(new LibraryItem(bk, Integer.valueOf(quantity)));
     }
 
-    public ArrayList<LibraryItem> searchByTitle(String titleQuery) {
-        ArrayList<LibraryItem> found = new ArrayList<LibraryItem>();
-        if (titleQuery == null || titleQuery.isEmpty()) {
-            return found;
+    /**
+     * Finds existingObject in the library and replaces it with newObject.
+     * Throws ObjectNotFoundException if existingObject is not found.
+     */
+    public boolean update(Book existingObject, Book newObject) {
+        if (existingObject == null || newObject == null) {
+            throw new InvalidFieldValueException("Existing and new book objects cannot be null.");
         }
-        String lowerQuery = titleQuery.toLowerCase();
         for (LibraryItem item : items) {
-            if (item.getBook().getTitle().toLowerCase().contains(lowerQuery)) {
-                found.add(item);
+            if (item.getBook().equals(existingObject)) {
+                item.setBook(newObject);
+                return true;
             }
         }
-        return found;
+        throw new ObjectNotFoundException("Cannot update: book '" + existingObject.getTitle() + "' was not found in the library.");
     }
 
-    public ArrayList<LibraryItem> searchByAuthor(String authorQuery) {
-        ArrayList<LibraryItem> found = new ArrayList<LibraryItem>();
-        if (authorQuery == null || authorQuery.isEmpty()) {
-            return found;
+    /**
+     * Finds existingObject in the library and removes it from the collection.
+     * Throws ObjectNotFoundException if existingObject is not found.
+     */
+    public boolean delete(Book existingObject) {
+        if (existingObject == null) {
+            throw new InvalidFieldValueException("Book to delete cannot be null.");
         }
-        String lowerQuery = authorQuery.toLowerCase();
-        for (LibraryItem item : items) {
-            if (item.getBook().getAuthor().toLowerCase().contains(lowerQuery)) {
-                found.add(item);
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getBook().equals(existingObject)) {
+                items.remove(i);
+                return true;
             }
         }
-        return found;
-    }
-
-    public ArrayList<LibraryItem> searchByGenre(Genre genre) {
-        ArrayList<LibraryItem> found = new ArrayList<LibraryItem>();
-        if (genre == null) {
-            return found;
-        }
-        for (LibraryItem item : items) {
-            if (item.getBook().getGenre() == genre) {
-                found.add(item);
-            }
-        }
-        return found;
-    }
-
-    public ArrayList<LibraryItem> searchByMaxPrice(double maxPrice) {
-        ArrayList<LibraryItem> found = new ArrayList<LibraryItem>();
-        for (LibraryItem item : items) {
-            if (item.getBook().getPrice() <= maxPrice) {
-                found.add(item);
-            }
-        }
-        return found;
+        throw new ObjectNotFoundException("Cannot delete: book '" + existingObject.getTitle() + "' was not found in the library.");
     }
 
     public void displayAllBooks() {
@@ -121,18 +101,76 @@ public class Library {
         }
     }
 
-    /**
-     * Returns a sorted copy of all library items using Comparable.
-     */
+    public ArrayList<LibraryItem> searchByTitle(String title) {
+        ArrayList<LibraryItem> results = new ArrayList<LibraryItem>();
+        if (title == null || title.trim().isEmpty()) {
+            return results;
+        }
+        String query = title.trim().toLowerCase();
+        for (LibraryItem item : items) {
+            if (item.getBook().getTitle().toLowerCase().contains(query)) {
+                results.add(item);
+            }
+        }
+        return results;
+    }
+
+    public ArrayList<LibraryItem> searchByAuthor(String author) {
+        ArrayList<LibraryItem> results = new ArrayList<LibraryItem>();
+        if (author == null || author.trim().isEmpty()) {
+            return results;
+        }
+        String query = author.trim().toLowerCase();
+        for (LibraryItem item : items) {
+            if (item.getBook().getAuthor().toLowerCase().contains(query)) {
+                results.add(item);
+            }
+        }
+        return results;
+    }
+
+    public ArrayList<LibraryItem> searchByGenre(Genre genre) {
+        ArrayList<LibraryItem> results = new ArrayList<LibraryItem>();
+        if (genre == null) {
+            return results;
+        }
+        for (LibraryItem item : items) {
+            if (item.getBook().getGenre() == genre) {
+                results.add(item);
+            }
+        }
+        return results;
+    }
+
+    public ArrayList<LibraryItem> searchByMaxPrice(double maxPrice) {
+        ArrayList<LibraryItem> results = new ArrayList<LibraryItem>();
+        for (LibraryItem item : items) {
+            if (item.getBook().getPrice() <= maxPrice) {
+                results.add(item);
+            }
+        }
+        return results;
+    }
+
+    public LibraryItem searchByUuid(String uuidText) {
+        if (uuidText == null || uuidText.trim().isEmpty()) {
+            throw new IllegalArgumentException("UUID cannot be empty.");
+        }
+        UUID targetUuid = UUID.fromString(uuidText.trim());
+        for (LibraryItem item : items) {
+            if (item.getBook().getUuid().equals(targetUuid)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<LibraryItem> getSortedItems() {
         ArrayList<LibraryItem> sorted = new ArrayList<LibraryItem>(items);
         Collections.sort(sorted);
         return sorted;
     }
 
-    /**
-     * Displays all books sorted by natural ordering defined in Book.compareTo().
-     */
     public void displaySortedBooks() {
         if (items.isEmpty()) {
             System.out.println("Library is empty.");
@@ -145,9 +183,6 @@ public class Library {
         }
     }
 
-    /**
-     * Returns a sorted copy of all library items using a custom Comparator.
-     */
     public ArrayList<LibraryItem> getSortedItems(Comparator<LibraryItem> comparator) {
         ArrayList<LibraryItem> sorted = new ArrayList<LibraryItem>(items);
         if (comparator != null) {
@@ -158,9 +193,6 @@ public class Library {
         return sorted;
     }
 
-    /**
-     * Displays all books sorted using the provided Comparator.
-     */
     public void displaySortedBooks(Comparator<LibraryItem> comparator, String criterionName) {
         if (items.isEmpty()) {
             System.out.println("Library is empty.");
@@ -171,22 +203,5 @@ public class Library {
         for (LibraryItem item : sorted) {
             System.out.println(item.toString());
         }
-    }
-
-    /**
-     * Finds a LibraryItem by its Book UUID string.
-     * Throws IllegalArgumentException if the UUID string format is invalid.
-     */
-    public LibraryItem searchByUuid(String uuidText) {
-        if (uuidText == null || uuidText.trim().isEmpty()) {
-            throw new IllegalArgumentException("UUID cannot be empty.");
-        }
-        UUID targetUuid = UUID.fromString(uuidText.trim());
-        for (LibraryItem item : items) {
-            if (item.getBook().getUuid().equals(targetUuid)) {
-                return item;
-            }
-        }
-        return null;
     }
 }
