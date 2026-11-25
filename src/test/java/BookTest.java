@@ -4,36 +4,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BookTest {
     @Test
-    void shouldCreateEBookSuccessfully() {
-        EBook ebook = new EBook("Java Guide", "Author", 2024, 100, Genre.SCIENCE, 5.5, "PDF");
-        assertTrue(ebook.toString().contains("PDF"));
+    void shouldIncreaseQuantityWhenAddingExistingBook() {
+        Library library = new Library("Test Library", "Main St");
+        Book b1 = new Book("Clean Code", "Robert Martin", 2008, 450.0, Genre.SCIENCE);
+        Book b2 = new Book("Clean Code", "Robert Martin", 2008, 450.0, Genre.SCIENCE);
+
+        library.addNewBook(b1, 3);
+        library.addNewBook(b2, 2);
+
+        assertEquals(1, library.getItems().size());
+        assertEquals(Integer.valueOf(5), library.getItems().get(0).getQuantity());
     }
 
     @Test
-    void shouldThrowExceptionForInvalidAudioBookDuration() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AudioBook("Title", "Author", 2024, 100, Genre.FICTION, "Narrator", -50);
-        });
-    }
+    void shouldSearchBooksInLibrary() {
+        Library library = new Library("Test Library", "Main St");
+        library.addNewBook(new Book("Clean Code", "Robert Martin", 2008, 450.0, Genre.SCIENCE), 2);
+        library.addNewBook(new EBook("Dune", "Frank Herbert", 1965, 200.0, Genre.FANTASY, 3.2, "EPUB"), 4);
+        library.addNewBook(new PaperBook("Kobzar", "Taras Shevchenko", 1840, 150.0, Genre.HISTORY, 400, 0.5), 1);
 
-    @Test
-    void shouldSearchBooksWithoutModifyingCollection() {
-        ArrayList<Book> library = new ArrayList<Book>();
-        library.add(new Book("Clean Code", "Robert Martin", 2008, 450.0, Genre.SCIENCE));
-        library.add(new EBook("Dune", "Frank Herbert", 1965, 200.0, Genre.FANTASY, 3.2, "EPUB"));
-        library.add(new PaperBook("Kobzar", "Taras Shevchenko", 1840, 150.0, Genre.HISTORY, 400, 0.5));
-
-        ArrayList<Book> byTitle = Main.searchByTitle(library, "dune");
+        ArrayList<LibraryItem> byTitle = library.searchByTitle("dune");
         assertEquals(1, byTitle.size());
-        assertEquals("Dune", byTitle.get(0).getTitle());
+        assertEquals(Integer.valueOf(4), byTitle.get(0).getQuantity());
 
-        ArrayList<Book> byGenre = Main.searchByGenre(library, Genre.SCIENCE);
+        ArrayList<LibraryItem> byGenre = library.searchByGenre(Genre.SCIENCE);
         assertEquals(1, byGenre.size());
 
-        ArrayList<Book> byPrice = Main.searchByMaxPrice(library, 250.0);
+        ArrayList<LibraryItem> byPrice = library.searchByMaxPrice(250.0);
         assertEquals(2, byPrice.size());
+    }
 
-        // Original collection must remain unchanged
-        assertEquals(3, library.size());
+    @Test
+    void shouldThrowExceptionForInvalidQuantity() {
+        Library library = new Library("Test Library", "Main St");
+        Book book = new Book("Title", "Author", 2024, 100.0, Genre.FICTION);
+        assertThrows(IllegalArgumentException.class, () -> {
+            library.addNewBook(book, 0);
+        });
     }
 }

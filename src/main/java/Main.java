@@ -4,14 +4,15 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        Library library = new Library("SumDU Central Library", "2 Rymskogo-Korsakova St");
 
-        // Load data from file at startup
-        ArrayList<Book> library = FileHandler.loadFromJson();
+        // Load data from input.txt using Library.addNewBook()
+        FileHandler.loadLibrary(library);
 
         while (true) {
             System.out.println("\n--- MAIN MENU ---");
             System.out.println("1. Search object");
-            System.out.println("2. Create new object (Book)");
+            System.out.println("2. Add new book (with quantity)");
             System.out.println("3. Display all objects");
             System.out.println("4. Exit and Save");
             System.out.print("Choose action: ");
@@ -19,7 +20,7 @@ public class Main {
             String choice = scanner.nextLine().trim();
 
             if (choice.equals("4")) {
-                FileHandler.saveToJson(library);
+                FileHandler.saveLibrary(library);
                 System.out.println("Program terminated. Goodbye!");
                 break;
             } else if (choice.equals("1")) {
@@ -27,7 +28,7 @@ public class Main {
             } else if (choice.equals("2")) {
                 createNewObjectMenu(scanner, library);
             } else if (choice.equals("3")) {
-                displayAllBooks(library);
+                library.displayAllBooks();
             } else {
                 System.out.println("Invalid choice. Please enter 1, 2, 3, or 4.");
             }
@@ -35,18 +36,7 @@ public class Main {
         scanner.close();
     }
 
-    private static void displayAllBooks(ArrayList<Book> library) {
-        if (library.isEmpty()) {
-            System.out.println("Library is empty.");
-            return;
-        }
-        System.out.println("\nLibrary Contents:");
-        for (Book b : library) {
-            System.out.println(b.toString());
-        }
-    }
-
-    private static void searchMenu(Scanner scanner, ArrayList<Book> library) {
+    private static void searchMenu(Scanner scanner, Library library) {
         if (library.isEmpty()) {
             System.out.println("Library is empty. Nothing to search.");
             return;
@@ -62,24 +52,20 @@ public class Main {
             System.out.print("Select search criterion: ");
 
             String choice = scanner.nextLine().trim();
-
             if (choice.equals("5")) {
                 return;
             }
 
             try {
-                ArrayList<Book> results = null;
-
+                ArrayList<LibraryItem> results = null;
                 switch (choice) {
                     case "1":
                         System.out.print("Enter title (or part of title): ");
-                        String titleQuery = scanner.nextLine().trim();
-                        results = searchByTitle(library, titleQuery);
+                        results = library.searchByTitle(scanner.nextLine().trim());
                         break;
                     case "2":
                         System.out.print("Enter author (or part of name): ");
-                        String authorQuery = scanner.nextLine().trim();
-                        results = searchByAuthor(library, authorQuery);
+                        results = library.searchByAuthor(scanner.nextLine().trim());
                         break;
                     case "3":
                         System.out.print("Choose genre (1-FICTION, 2-NON_FICTION, 3-SCIENCE, 4-HISTORY, 5-FANTASY): ");
@@ -88,8 +74,7 @@ public class Main {
                             System.out.println("Invalid genre number.");
                             continue;
                         }
-                        Genre genre = Genre.values()[gChoice - 1];
-                        results = searchByGenre(library, genre);
+                        results = library.searchByGenre(Genre.values()[gChoice - 1]);
                         break;
                     case "4":
                         System.out.print("Enter maximum price: ");
@@ -98,13 +83,12 @@ public class Main {
                             System.out.println("Price must be greater than zero.");
                             continue;
                         }
-                        results = searchByMaxPrice(library, maxPrice);
+                        results = library.searchByMaxPrice(maxPrice);
                         break;
                     default:
                         System.out.println("Invalid choice. Please enter 1-5.");
                         continue;
                 }
-
                 displaySearchResults(results);
             } catch (NumberFormatException e) {
                 System.out.println("Input error: numeric value expected.");
@@ -114,70 +98,19 @@ public class Main {
         }
     }
 
-    public static ArrayList<Book> searchByTitle(ArrayList<Book> library, String titleQuery) {
-        ArrayList<Book> found = new ArrayList<Book>();
-        if (titleQuery == null || titleQuery.isEmpty()) {
-            return found;
-        }
-        String lowerQuery = titleQuery.toLowerCase();
-        for (Book b : library) {
-            if (b.getTitle().toLowerCase().contains(lowerQuery)) {
-                found.add(b);
-            }
-        }
-        return found;
-    }
-
-    public static ArrayList<Book> searchByAuthor(ArrayList<Book> library, String authorQuery) {
-        ArrayList<Book> found = new ArrayList<Book>();
-        if (authorQuery == null || authorQuery.isEmpty()) {
-            return found;
-        }
-        String lowerQuery = authorQuery.toLowerCase();
-        for (Book b : library) {
-            if (b.getAuthor().toLowerCase().contains(lowerQuery)) {
-                found.add(b);
-            }
-        }
-        return found;
-    }
-
-    public static ArrayList<Book> searchByGenre(ArrayList<Book> library, Genre genre) {
-        ArrayList<Book> found = new ArrayList<Book>();
-        if (genre == null) {
-            return found;
-        }
-        for (Book b : library) {
-            if (b.getGenre() == genre) {
-                found.add(b);
-            }
-        }
-        return found;
-    }
-
-    public static ArrayList<Book> searchByMaxPrice(ArrayList<Book> library, double maxPrice) {
-        ArrayList<Book> found = new ArrayList<Book>();
-        for (Book b : library) {
-            if (b.getPrice() <= maxPrice) {
-                found.add(b);
-            }
-        }
-        return found;
-    }
-
-    private static void displaySearchResults(ArrayList<Book> results) {
+    private static void displaySearchResults(ArrayList<LibraryItem> results) {
         if (results == null || results.isEmpty()) {
             System.out.println("No objects found matching the search criteria.");
             return;
         }
         System.out.println("\nFound objects (" + results.size() + "):");
-        for (Book b : results) {
-            System.out.println(b.toString());
+        for (LibraryItem item : results) {
+            System.out.println(item.toString());
         }
     }
 
-    private static void createNewObjectMenu(Scanner scanner, ArrayList<Book> library) {
-        System.out.println("\n--- CREATE NEW OBJECT ---");
+    private static void createNewObjectMenu(Scanner scanner, Library library) {
+        System.out.println("\n--- ADD NEW BOOK ---");
         System.out.println("1. Regular Book");
         System.out.println("2. E-Book");
         System.out.println("3. Paper Book");
@@ -202,34 +135,31 @@ public class Main {
             int gChoice = Integer.parseInt(scanner.nextLine().trim());
             Genre genre = Genre.values()[gChoice - 1];
 
+            Book newBook = null;
             switch (typeChoice) {
                 case "1":
-                    library.add(new Book(title, author, year, price, genre));
-                    System.out.println("Regular Book added.");
+                    newBook = new Book(title, author, year, price, genre);
                     break;
                 case "2":
                     System.out.print("Enter file size (MB): ");
                     double size = Double.parseDouble(scanner.nextLine().trim());
                     System.out.print("Enter format: ");
                     String format = scanner.nextLine();
-                    library.add(new EBook(title, author, year, price, genre, size, format));
-                    System.out.println("E-Book added.");
+                    newBook = new EBook(title, author, year, price, genre, size, format);
                     break;
                 case "3":
                     System.out.print("Enter page count: ");
                     int pages = Integer.parseInt(scanner.nextLine().trim());
                     System.out.print("Enter weight (kg): ");
                     double weight = Double.parseDouble(scanner.nextLine().trim());
-                    library.add(new PaperBook(title, author, year, price, genre, pages, weight));
-                    System.out.println("Paper Book added.");
+                    newBook = new PaperBook(title, author, year, price, genre, pages, weight);
                     break;
                 case "4":
                     System.out.print("Enter narrator name: ");
                     String narrator = scanner.nextLine();
                     System.out.print("Enter duration (minutes): ");
                     int duration = Integer.parseInt(scanner.nextLine().trim());
-                    library.add(new AudioBook(title, author, year, price, genre, narrator, duration));
-                    System.out.println("Audio Book added.");
+                    newBook = new AudioBook(title, author, year, price, genre, narrator, duration);
                     break;
                 case "5":
                     System.out.print("Enter file size (MB): ");
@@ -240,12 +170,17 @@ public class Main {
                     boolean hasVideo = Boolean.parseBoolean(scanner.nextLine().trim());
                     System.out.print("Has quizzes? (true/false): ");
                     boolean hasQuizzes = Boolean.parseBoolean(scanner.nextLine().trim());
-                    library.add(new InteractiveEBook(title, author, year, price, genre, iSize, iFormat, hasVideo, hasQuizzes));
-                    System.out.println("Interactive E-Book added.");
+                    newBook = new InteractiveEBook(title, author, year, price, genre, iSize, iFormat, hasVideo, hasQuizzes);
                     break;
                 default:
                     System.out.println("Invalid type selected.");
+                    return;
             }
+
+            System.out.print("Enter quantity: ");
+            int quantity = Integer.parseInt(scanner.nextLine().trim());
+            library.addNewBook(newBook, quantity);
+            System.out.println("Book added/updated successfully!");
         } catch (Exception e) {
             System.out.println("Error creating object: " + e.getMessage());
         }
