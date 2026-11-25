@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Container class representing a library that aggregates Book items and their quantities.
@@ -114,6 +115,30 @@ public class Library {
         }
         System.out.println("\n" + name + " (" + address + ") - Contents:");
         for (LibraryItem item : items) {
+            System.out.println(item.toString());
+        }
+    }
+
+    /**
+     * Returns a sorted copy of all library items using Comparable.
+     */
+    public ArrayList<LibraryItem> getSortedItems() {
+        ArrayList<LibraryItem> sorted = new ArrayList<LibraryItem>(items);
+        Collections.sort(sorted);
+        return sorted;
+    }
+
+    /**
+     * Displays all books sorted by natural ordering defined in Book.compareTo().
+     */
+    public void displaySortedBooks() {
+        if (items.isEmpty()) {
+            System.out.println("Library is empty.");
+            return;
+        }
+        ArrayList<LibraryItem> sorted = getSortedItems();
+        System.out.println("\n" + name + " (" + address + ") - Sorted Contents:");
+        for (LibraryItem item : sorted) {
             System.out.println(item.toString());
         }
     }

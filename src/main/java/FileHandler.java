@@ -46,7 +46,8 @@ public class FileHandler {
                         book = gson.fromJson(bookObj, InteractiveEBook.class);
                         break;
                     default:
-                        book = gson.fromJson(bookObj, Book.class);
+                        System.out.println("Skipping unsupported or abstract book type: " + type);
+                        continue;
                 }
                 library.addNewBook(book, quantity);
             }
