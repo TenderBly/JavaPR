@@ -271,6 +271,8 @@ public class Main {
             int quantity = Integer.parseInt(scanner.nextLine().trim());
             library.addNewBook(newBook, quantity);
             System.out.println("Book added/updated successfully!");
+        } catch (InvalidFieldValueException e) {
+            System.out.println("Validation error: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.out.println("Input error: numeric value expected.");
         } catch (Exception e) {
@@ -357,6 +359,10 @@ public class Main {
             } else {
                 System.out.println("Book was not found in the library.");
             }
+        } catch (InvalidFieldValueException e) {
+            System.out.println("Validation error: " + e.getMessage());
+        } catch (ObjectNotFoundException e) {
+            System.out.println("Not found error: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.out.println("Input error: numeric value expected.");
         } catch (Exception e) {
@@ -402,6 +408,10 @@ public class Main {
             } else {
                 System.out.println("Book was not found in the library.");
             }
+        } catch (ObjectNotFoundException e) {
+            System.out.println("Not found error: " + e.getMessage());
+        } catch (InvalidFieldValueException e) {
+            System.out.println("Validation error: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.out.println("Input error: numeric value expected.");
         } catch (Exception e) {
