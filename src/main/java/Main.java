@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
+import com.google.gson.Gson;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,14 +15,16 @@ public class Main {
             System.out.println("\n--- MAIN MENU ---");
             System.out.println("1. Search object");
             System.out.println("2. Add new book (with quantity)");
-            System.out.println("3. Display all objects");
-            System.out.println("4. Display sorted information about all books");
-            System.out.println("5. Exit and Save");
+            System.out.println("3. Modify book");
+            System.out.println("4. Delete book");
+            System.out.println("5. Display all objects");
+            System.out.println("6. Display sorted information about all books");
+            System.out.println("7. Exit and Save");
             System.out.print("Choose action: ");
 
             String choice = scanner.nextLine().trim();
 
-            if (choice.equals("5")) {
+            if (choice.equals("7")) {
                 FileHandler.saveLibrary(library);
                 System.out.println("Program terminated. Goodbye!");
                 break;
@@ -30,11 +33,15 @@ public class Main {
             } else if (choice.equals("2")) {
                 createNewObjectMenu(scanner, library);
             } else if (choice.equals("3")) {
-                library.displayAllBooks();
+                modifyBookMenu(scanner, library);
             } else if (choice.equals("4")) {
+                deleteBookMenu(scanner, library);
+            } else if (choice.equals("5")) {
+                library.displayAllBooks();
+            } else if (choice.equals("6")) {
                 sortMenu(scanner, library);
             } else {
-                System.out.println("Invalid choice. Please enter 1, 2, 3, 4, or 5.");
+                System.out.println("Invalid choice. Please enter 1-7.");
             }
         }
         scanner.close();
@@ -268,6 +275,137 @@ public class Main {
             System.out.println("Input error: numeric value expected.");
         } catch (Exception e) {
             System.out.println("Error creating object: " + e.getMessage());
+        }
+    }
+
+    private static void modifyBookMenu(Scanner scanner, Library library) {
+        if (library.isEmpty()) {
+            System.out.println("Library is empty. Nothing to modify.");
+            return;
+        }
+
+        ArrayList<LibraryItem> items = library.getItems();
+        System.out.println("\n--- MODIFY BOOK ---");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println((i + 1) + ". " + items.get(i).toString());
+        }
+        System.out.println("0. Back to main menu");
+        System.out.print("Select book number to modify: ");
+
+        try {
+            int index = Integer.parseInt(scanner.nextLine().trim());
+            if (index == 0) {
+                return;
+            }
+            if (index < 1 || index > items.size()) {
+                System.out.println("Object not found: invalid book number.");
+                return;
+            }
+
+            Book existingBook = items.get(index - 1).getBook();
+            Gson gson = new Gson();
+            Book updatedBook = gson.fromJson(gson.toJson(existingBook), existingBook.getClass());
+
+            System.out.println("\nSelect attribute to modify:");
+            System.out.println("1. Title");
+            System.out.println("2. Author");
+            System.out.println("3. Publication year");
+            System.out.println("4. Price");
+            System.out.println("5. Genre");
+            System.out.println("0. Cancel");
+            System.out.print("Choose attribute: ");
+
+            String attrChoice = scanner.nextLine().trim();
+            if (attrChoice.equals("0")) {
+                return;
+            }
+
+            switch (attrChoice) {
+                case "1":
+                    System.out.print("Enter new title: ");
+                    updatedBook.setTitle(scanner.nextLine());
+                    break;
+                case "2":
+                    System.out.print("Enter new author: ");
+                    updatedBook.setAuthor(scanner.nextLine());
+                    break;
+                case "3":
+                    System.out.print("Enter new publication year: ");
+                    updatedBook.setYear(Integer.parseInt(scanner.nextLine().trim()));
+                    break;
+                case "4":
+                    System.out.print("Enter new price: ");
+                    updatedBook.setPrice(Double.parseDouble(scanner.nextLine().trim()));
+                    break;
+                case "5":
+                    System.out.print("Choose new genre (1-FICTION, 2-NON_FICTION, 3-SCIENCE, 4-HISTORY, 5-FANTASY): ");
+                    int gChoice = Integer.parseInt(scanner.nextLine().trim());
+                    if (gChoice < 1 || gChoice > Genre.values().length) {
+                        System.out.println("Invalid genre number.");
+                        return;
+                    }
+                    updatedBook.setGenre(Genre.values()[gChoice - 1]);
+                    break;
+                default:
+                    System.out.println("Invalid attribute choice.");
+                    return;
+            }
+
+            boolean result = library.update(existingBook, updatedBook);
+            if (result) {
+                System.out.println("Book successfully updated!");
+            } else {
+                System.out.println("Book was not found in the library.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Input error: numeric value expected.");
+        } catch (Exception e) {
+            System.out.println("Modification error: " + e.getMessage());
+        }
+    }
+
+    private static void deleteBookMenu(Scanner scanner, Library library) {
+        if (library.isEmpty()) {
+            System.out.println("Library is empty. Nothing to delete.");
+            return;
+        }
+
+        ArrayList<LibraryItem> items = library.getItems();
+        System.out.println("\n--- DELETE BOOK ---");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println((i + 1) + ". " + items.get(i).toString());
+        }
+        System.out.println("0. Back to main menu");
+        System.out.print("Select book number to delete: ");
+
+        try {
+            int index = Integer.parseInt(scanner.nextLine().trim());
+            if (index == 0) {
+                return;
+            }
+            if (index < 1 || index > items.size()) {
+                System.out.println("Object not found: invalid book number.");
+                return;
+            }
+
+            Book targetBook = items.get(index - 1).getBook();
+            System.out.print("Are you sure you want to delete '" + targetBook.getTitle() + "'? (yes/no): ");
+            String confirm = scanner.nextLine().trim().toLowerCase();
+            if (!confirm.equals("yes") && !confirm.equals("y")) {
+                System.out.println("Deletion cancelled.");
+                return;
+            }
+
+            boolean deleted = library.delete(targetBook);
+            if (deleted) {
+                System.out.println("Book successfully deleted!");
+            } else {
+                System.out.println("Book was not found in the library.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Input error: numeric value expected.");
+        } catch (Exception e) {
+            System.out.println("Deletion error: " + e.getMessage());
         }
     }
 }
