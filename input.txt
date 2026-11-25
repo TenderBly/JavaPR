@@ -3,6 +3,7 @@
     "book": {
       "pageCount": 400,
       "weightKg": 0.5,
+      "uuid": "cbc36693-5af5-446f-817d-96ba87618f07",
       "type": "PaperBook",
       "title": "Kobzar",
       "author": "Taras Shevchenko",
@@ -16,6 +17,7 @@
     "book": {
       "fileSizeMB": 3.2,
       "fileFormat": "EPUB",
+      "uuid": "f0d4185d-c219-4aa0-9b45-470fd1206dad",
       "type": "EBook",
       "title": "Dune",
       "author": "Frank Herbert",
@@ -29,6 +31,7 @@
     "book": {
       "narrator": "James Clear",
       "durationMinutes": 335,
+      "uuid": "1c6e00b5-0440-4293-bfc0-d3e0d0c07d11",
       "type": "AudioBook",
       "title": "Atomic Habits",
       "author": "James Clear",
@@ -37,5 +40,19 @@
       "genre": "NON_FICTION"
     },
     "quantity": 3
+  },
+  {
+    "book": {
+      "pageCount": 30,
+      "weightKg": 0.5,
+      "uuid": "bc6d513e-3e7d-409c-ab40-e5a97804e523",
+      "type": "PaperBook",
+      "title": "Oleg",
+      "author": "Me",
+      "year": 2000,
+      "price": 34.0,
+      "genre": "NON_FICTION"
+    },
+    "quantity": 2
   }
 ]
