@@ -63,51 +63,39 @@ public class Main {
             }
 
             if (choice.equals("1")) {
-                Comparator<LibraryItem> titleComparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        int res = o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
-                        if (res != 0) {
-                            return res;
-                        }
-                        return o1.getBook().getAuthor().compareToIgnoreCase(o2.getBook().getAuthor());
+                Comparator<LibraryItem> titleComparator = (o1, o2) -> {
+                    int res = o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                    if (res != 0) {
+                        return res;
                     }
+                    return o1.getBook().getAuthor().compareToIgnoreCase(o2.getBook().getAuthor());
                 };
                 library.displaySortedBooks(titleComparator, "Title (A-Z)");
             } else if (choice.equals("2")) {
-                Comparator<LibraryItem> authorComparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        int res = o1.getBook().getAuthor().compareToIgnoreCase(o2.getBook().getAuthor());
-                        if (res != 0) {
-                            return res;
-                        }
-                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                Comparator<LibraryItem> authorComparator = (o1, o2) -> {
+                    int res = o1.getBook().getAuthor().compareToIgnoreCase(o2.getBook().getAuthor());
+                    if (res != 0) {
+                        return res;
                     }
+                    return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
                 };
                 library.displaySortedBooks(authorComparator, "Author (A-Z)");
             } else if (choice.equals("3")) {
-                Comparator<LibraryItem> priceComparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        int res = Double.compare(o1.getBook().getPrice(), o2.getBook().getPrice());
-                        if (res != 0) {
-                            return res;
-                        }
-                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                Comparator<LibraryItem> priceComparator = (o1, o2) -> {
+                    int res = Double.compare(o1.getBook().getPrice(), o2.getBook().getPrice());
+                    if (res != 0) {
+                        return res;
                     }
+                    return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
                 };
                 library.displaySortedBooks(priceComparator, "Price (ascending)");
             } else if (choice.equals("4")) {
-                Comparator<LibraryItem> yearComparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        int res = Integer.compare(o2.getBook().getYear(), o1.getBook().getYear());
-                        if (res != 0) {
-                            return res;
-                        }
-                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                Comparator<LibraryItem> yearComparator = (o1, o2) -> {
+                    int res = Integer.compare(o2.getBook().getYear(), o1.getBook().getYear());
+                    if (res != 0) {
+                        return res;
                     }
+                    return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
                 };
                 library.displaySortedBooks(yearComparator, "Publication Year (newest first)");
             } else {
