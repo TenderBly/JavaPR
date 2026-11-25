@@ -1,12 +1,31 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Error: Please provide the path to the database properties file.");
+            System.out.println("Usage: java Main db.properties");
+            return;
+        }
+
+        DatabaseManager dbManager = null;
+        try {
+            dbManager = new DatabaseManager(args[0]);
+            if (dbManager.testConnection()) {
+                System.out.println("Successfully connected to the database.");
+            } else {
+                System.out.println("Warning: Could not connect to the database. Inserts may fail.");
+            }
+        } catch (IOException | IllegalArgumentException e) {
+            System.out.println("Failed to load DB configuration: " + e.getMessage());
+            return;
+        }
+
         Scanner scanner = new Scanner(System.in);
         Library library = new Library("SumDU Central Library", "2 Rymskogo-Korsakova St");
 
-        // Load data from input.txt using Library.addNewBook()
         FileHandler.loadLibrary(library);
 
         while (true) {
@@ -26,7 +45,7 @@ public class Main {
             } else if (choice.equals("1")) {
                 searchMenu(scanner, library);
             } else if (choice.equals("2")) {
-                createNewObjectMenu(scanner, library);
+                createNewObjectMenu(scanner, library, dbManager);
             } else if (choice.equals("3")) {
                 library.displayAllBooks();
             } else {
@@ -109,7 +128,7 @@ public class Main {
         }
     }
 
-    private static void createNewObjectMenu(Scanner scanner, Library library) {
+   private static void createNewObjectMenu(Scanner scanner, Library library, DatabaseManager dbManager) {
         System.out.println("\n--- ADD NEW BOOK ---");
         System.out.println("1. Regular Book");
         System.out.println("2. E-Book");
@@ -180,6 +199,7 @@ public class Main {
             System.out.print("Enter quantity: ");
             int quantity = Integer.parseInt(scanner.nextLine().trim());
             library.addNewBook(newBook, quantity);
+            dbManager.insertBook(newBook, quantity);
             System.out.println("Book added/updated successfully!");
         } catch (Exception e) {
             System.out.println("Error creating object: " + e.getMessage());
