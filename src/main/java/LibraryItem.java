@@ -20,6 +20,13 @@ public class LibraryItem implements Comparable<LibraryItem> {
         return book;
     }
 
+    public void setBook(Book book) {
+        if (book == null) {
+            throw new IllegalArgumentException("Book cannot be null.");
+        }
+        this.book = book;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
