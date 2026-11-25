@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Main {
@@ -31,12 +32,88 @@ public class Main {
             } else if (choice.equals("3")) {
                 library.displayAllBooks();
             } else if (choice.equals("4")) {
-                library.displaySortedBooks();
+                sortMenu(scanner, library);
             } else {
                 System.out.println("Invalid choice. Please enter 1, 2, 3, 4, or 5.");
             }
         }
         scanner.close();
+    }
+
+    private static void sortMenu(Scanner scanner, Library library) {
+        if (library.isEmpty()) {
+            System.out.println("Library is empty. Nothing to sort.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\n--- SORT MENU ---");
+            System.out.println("Choose sorting criterion:");
+            System.out.println("1. Sort by title (A-Z)");
+            System.out.println("2. Sort by author (A-Z)");
+            System.out.println("3. Sort by price (ascending)");
+            System.out.println("4. Sort by publication year (newest first)");
+            System.out.println("0. Back to main menu");
+            System.out.print("Select criterion: ");
+
+            String choice = scanner.nextLine().trim();
+
+            if (choice.equals("0")) {
+                return;
+            }
+
+            if (choice.equals("1")) {
+                Comparator<LibraryItem> titleComparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        int res = o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                        if (res != 0) {
+                            return res;
+                        }
+                        return o1.getBook().getAuthor().compareToIgnoreCase(o2.getBook().getAuthor());
+                    }
+                };
+                library.displaySortedBooks(titleComparator, "Title (A-Z)");
+            } else if (choice.equals("2")) {
+                Comparator<LibraryItem> authorComparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        int res = o1.getBook().getAuthor().compareToIgnoreCase(o2.getBook().getAuthor());
+                        if (res != 0) {
+                            return res;
+                        }
+                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                    }
+                };
+                library.displaySortedBooks(authorComparator, "Author (A-Z)");
+            } else if (choice.equals("3")) {
+                Comparator<LibraryItem> priceComparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        int res = Double.compare(o1.getBook().getPrice(), o2.getBook().getPrice());
+                        if (res != 0) {
+                            return res;
+                        }
+                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                    }
+                };
+                library.displaySortedBooks(priceComparator, "Price (ascending)");
+            } else if (choice.equals("4")) {
+                Comparator<LibraryItem> yearComparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        int res = Integer.compare(o2.getBook().getYear(), o1.getBook().getYear());
+                        if (res != 0) {
+                            return res;
+                        }
+                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                    }
+                };
+                library.displaySortedBooks(yearComparator, "Publication Year (newest first)");
+            } else {
+                System.out.println("Invalid choice. Please enter 0, 1, 2, 3, or 4.");
+            }
+        }
     }
 
     private static void searchMenu(Scanner scanner, Library library) {
