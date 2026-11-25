@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Container class representing a library that aggregates Book items and their quantities.
@@ -138,6 +139,34 @@ public class Library {
         }
         ArrayList<LibraryItem> sorted = getSortedItems();
         System.out.println("\n" + name + " (" + address + ") - Sorted Contents:");
+        for (LibraryItem item : sorted) {
+            System.out.println(item.toString());
+        }
+    }
+
+    /**
+     * Returns a sorted copy of all library items using a custom Comparator.
+     */
+    public ArrayList<LibraryItem> getSortedItems(Comparator<LibraryItem> comparator) {
+        ArrayList<LibraryItem> sorted = new ArrayList<LibraryItem>(items);
+        if (comparator != null) {
+            Collections.sort(sorted, comparator);
+        } else {
+            Collections.sort(sorted);
+        }
+        return sorted;
+    }
+
+    /**
+     * Displays all books sorted using the provided Comparator.
+     */
+    public void displaySortedBooks(Comparator<LibraryItem> comparator, String criterionName) {
+        if (items.isEmpty()) {
+            System.out.println("Library is empty.");
+            return;
+        }
+        ArrayList<LibraryItem> sorted = getSortedItems(comparator);
+        System.out.println("\n" + name + " (" + address + ") - Sorted by " + criterionName + ":");
         for (LibraryItem item : sorted) {
             System.out.println(item.toString());
         }
