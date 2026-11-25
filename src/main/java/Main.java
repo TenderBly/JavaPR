@@ -1,14 +1,11 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Main driver class for managing the library collection,
- * including searching, creating, displaying, and saving books.
- */
 public class Main {
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
+        // Load data from file at startup
         ArrayList<Book> library = FileHandler.loadFromJson();
 
         while (true) {
@@ -30,7 +27,7 @@ public class Main {
             } else if (choice.equals("2")) {
                 createNewObjectMenu(scanner, library);
             } else if (choice.equals("3")) {
-                displayLibrary(library);
+                displayAllBooks(library);
             } else {
                 System.out.println("Invalid choice. Please enter 1, 2, 3, or 4.");
             }
@@ -38,29 +35,17 @@ public class Main {
         scanner.close();
     }
 
-    /**
-     * Displays all books currently stored in the library.
-     *
-     * @param library the list of books to display
-     */
-    private static void displayLibrary(ArrayList<Book> library) {
+    private static void displayAllBooks(ArrayList<Book> library) {
         if (library.isEmpty()) {
             System.out.println("Library is empty.");
-        } else {
-            System.out.println("\nLibrary Contents:");
-            for (Book book : library) {
-                System.out.println(book.toString());
-            }
+            return;
+        }
+        System.out.println("\nLibrary Contents:");
+        for (Book b : library) {
+            System.out.println(b.toString());
         }
     }
 
-    /**
-     * Displays the search submenu and delegates search execution
-     * to specialized search methods without modifying the collection.
-     *
-     * @param scanner the Scanner for reading user input
-     * @param library the collection of books to search in
-     */
     private static void searchMenu(Scanner scanner, ArrayList<Book> library) {
         if (library.isEmpty()) {
             System.out.println("Library is empty. Nothing to search.");
@@ -72,9 +57,9 @@ public class Main {
             System.out.println("1. Search by title");
             System.out.println("2. Search by author");
             System.out.println("3. Search by genre");
-            System.out.println("4. Search by price range");
+            System.out.println("4. Search by maximum price");
             System.out.println("5. Back to main menu");
-            System.out.print("Choose search criterion: ");
+            System.out.print("Select search criterion: ");
 
             String choice = scanner.nextLine().trim();
 
@@ -89,47 +74,32 @@ public class Main {
                     case "1":
                         System.out.print("Enter title (or part of title): ");
                         String titleQuery = scanner.nextLine().trim();
-                        if (titleQuery.isEmpty()) {
-                            System.out.println("Search query cannot be empty.");
-                            continue;
-                        }
                         results = searchByTitle(library, titleQuery);
                         break;
-
                     case "2":
-                        System.out.print("Enter author (or part of author name): ");
+                        System.out.print("Enter author (or part of name): ");
                         String authorQuery = scanner.nextLine().trim();
-                        if (authorQuery.isEmpty()) {
-                            System.out.println("Search query cannot be empty.");
-                            continue;
-                        }
                         results = searchByAuthor(library, authorQuery);
                         break;
-
                     case "3":
-                        System.out.println("Genres: 1-FICTION, 2-NON_FICTION, 3-SCIENCE, 4-HISTORY, 5-FANTASY");
-                        System.out.print("Choose genre (1-5): ");
-                        int genreIndex = Integer.parseInt(scanner.nextLine().trim());
-                        if (genreIndex < 1 || genreIndex > Genre.values().length) {
+                        System.out.print("Choose genre (1-FICTION, 2-NON_FICTION, 3-SCIENCE, 4-HISTORY, 5-FANTASY): ");
+                        int gChoice = Integer.parseInt(scanner.nextLine().trim());
+                        if (gChoice < 1 || gChoice > Genre.values().length) {
                             System.out.println("Invalid genre number.");
                             continue;
                         }
-                        Genre selectedGenre = Genre.values()[genreIndex - 1];
-                        results = searchByGenre(library, selectedGenre);
+                        Genre genre = Genre.values()[gChoice - 1];
+                        results = searchByGenre(library, genre);
                         break;
-
                     case "4":
-                        System.out.print("Enter minimum price: ");
-                        double minPrice = Double.parseDouble(scanner.nextLine().trim());
                         System.out.print("Enter maximum price: ");
                         double maxPrice = Double.parseDouble(scanner.nextLine().trim());
-                        if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
-                            System.out.println("Invalid price range. Ensure 0 <= min <= max.");
+                        if (maxPrice <= 0) {
+                            System.out.println("Price must be greater than zero.");
                             continue;
                         }
-                        results = searchByPriceRange(library, minPrice, maxPrice);
+                        results = searchByMaxPrice(library, maxPrice);
                         break;
-
                     default:
                         System.out.println("Invalid choice. Please enter 1-5.");
                         continue;
@@ -137,104 +107,75 @@ public class Main {
 
                 displaySearchResults(results);
             } catch (NumberFormatException e) {
-                System.out.println("Input error: please enter a valid numeric value.");
+                System.out.println("Input error: numeric value expected.");
+            } catch (Exception e) {
+                System.out.println("Search error: " + e.getMessage());
             }
         }
     }
 
-    /**
-     * Searches for books whose title contains the given query (case-insensitive).
-     *
-     * @param library the source collection (not modified)
-     * @param titleQuery the title substring to search for
-     * @return a new ArrayList containing all matching books
-     */
     public static ArrayList<Book> searchByTitle(ArrayList<Book> library, String titleQuery) {
         ArrayList<Book> found = new ArrayList<Book>();
+        if (titleQuery == null || titleQuery.isEmpty()) {
+            return found;
+        }
         String lowerQuery = titleQuery.toLowerCase();
-        for (Book book : library) {
-            if (book.getTitle() != null && book.getTitle().toLowerCase().contains(lowerQuery)) {
-                found.add(book);
+        for (Book b : library) {
+            if (b.getTitle().toLowerCase().contains(lowerQuery)) {
+                found.add(b);
             }
         }
         return found;
     }
 
-    /**
-     * Searches for books whose author contains the given query (case-insensitive).
-     *
-     * @param library the source collection (not modified)
-     * @param authorQuery the author substring to search for
-     * @return a new ArrayList containing all matching books
-     */
     public static ArrayList<Book> searchByAuthor(ArrayList<Book> library, String authorQuery) {
         ArrayList<Book> found = new ArrayList<Book>();
+        if (authorQuery == null || authorQuery.isEmpty()) {
+            return found;
+        }
         String lowerQuery = authorQuery.toLowerCase();
-        for (Book book : library) {
-            if (book.getAuthor() != null && book.getAuthor().toLowerCase().contains(lowerQuery)) {
-                found.add(book);
+        for (Book b : library) {
+            if (b.getAuthor().toLowerCase().contains(lowerQuery)) {
+                found.add(b);
             }
         }
         return found;
     }
 
-    /**
-     * Searches for books matching the specified genre.
-     *
-     * @param library the source collection (not modified)
-     * @param genre the Genre to match
-     * @return a new ArrayList containing all matching books
-     */
     public static ArrayList<Book> searchByGenre(ArrayList<Book> library, Genre genre) {
         ArrayList<Book> found = new ArrayList<Book>();
-        for (Book book : library) {
-            if (book.getGenre() == genre) {
-                found.add(book);
+        if (genre == null) {
+            return found;
+        }
+        for (Book b : library) {
+            if (b.getGenre() == genre) {
+                found.add(b);
             }
         }
         return found;
     }
 
-    /**
-     * Searches for books within the specified inclusive price range.
-     *
-     * @param library the source collection (not modified)
-     * @param minPrice the minimum price (inclusive)
-     * @param maxPrice the maximum price (inclusive)
-     * @return a new ArrayList containing all matching books
-     */
-    public static ArrayList<Book> searchByPriceRange(ArrayList<Book> library, double minPrice, double maxPrice) {
+    public static ArrayList<Book> searchByMaxPrice(ArrayList<Book> library, double maxPrice) {
         ArrayList<Book> found = new ArrayList<Book>();
-        for (Book book : library) {
-            if (book.getPrice() >= minPrice && book.getPrice() <= maxPrice) {
-                found.add(book);
+        for (Book b : library) {
+            if (b.getPrice() <= maxPrice) {
+                found.add(b);
             }
         }
         return found;
     }
 
-    /**
-     * Prints search results to the console or notifies if nothing was found.
-     *
-     * @param results the list of matching books
-     */
     private static void displaySearchResults(ArrayList<Book> results) {
         if (results == null || results.isEmpty()) {
-            System.out.println("No objects match the given search criteria.");
-        } else {
-            System.out.println("\nFound " + results.size() + " matching object(s):");
-            for (Book book : results) {
-                System.out.println(book.toString());
-            }
+            System.out.println("No objects found matching the search criteria.");
+            return;
+        }
+        System.out.println("\nFound objects (" + results.size() + "):");
+        for (Book b : results) {
+            System.out.println(b.toString());
         }
     }
 
-    /**
-     * Displays the submenu for creating new book objects of any type in the hierarchy.
-     *
-     * @param scanner the Scanner for reading user input
-     * @param library the collection where the new book will be added
-     */
     private static void createNewObjectMenu(Scanner scanner, ArrayList<Book> library) {
         System.out.println("\n--- CREATE NEW OBJECT ---");
         System.out.println("1. Regular Book");
@@ -246,9 +187,7 @@ public class Main {
         System.out.print("Select type: ");
 
         String typeChoice = scanner.nextLine().trim();
-        if (typeChoice.equals("6")) {
-            return;
-        }
+        if (typeChoice.equals("6")) return;
 
         try {
             System.out.print("Enter title: ");
