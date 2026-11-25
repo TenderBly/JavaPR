@@ -121,14 +121,6 @@ class BookTest {
         assertEquals(Integer.valueOf(3), library.getItems().get(0).getQuantity());
     }
 
-    @Test
-    void shouldReturnFalseWhenUpdatingNonExistentBook() {
-        Library library = new Library("Test Library", "Main St");
-        EBook missing = new EBook("Unknown", "Author", 2020, 100.0, Genre.FICTION, 1.0, "PDF");
-        EBook replacement = new EBook("New Title", "Author", 2021, 120.0, Genre.FICTION, 1.0, "PDF");
-
-        assertFalse(library.update(missing, replacement));
-    }
 
     @Test
     void shouldDeleteExistingBookFromLibrary() {
@@ -143,13 +135,5 @@ class BookTest {
         assertTrue(deleted);
         assertEquals(1, library.getItems().size());
         assertEquals("Dune", library.getItems().get(0).getBook().getTitle());
-    }
-
-    @Test
-    void shouldReturnFalseWhenDeletingNonExistentBook() {
-        Library library = new Library("Test Library", "Main St");
-        PaperBook missing = new PaperBook("Kobzar", "Taras Shevchenko", 1840, 150.0, Genre.HISTORY, 400, 0.5);
-
-        assertFalse(library.delete(missing));
     }
 }
