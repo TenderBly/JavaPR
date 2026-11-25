@@ -19,6 +19,9 @@ public class AudioBook extends Book {
         this.durationMinutes = durationMinutes;
     }
 
+    public String getNarrator() { return narrator; }
+    public int getDurationMinutes() { return durationMinutes; }
+
     @Override
     public String toString() {
         return "AudioBook{" + super.toString() + ", narrator='" + narrator + "', durationMinutes=" + durationMinutes + "}";

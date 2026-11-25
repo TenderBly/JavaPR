@@ -9,6 +9,9 @@ public class InteractiveEBook extends EBook {
         this.hasQuizzes = hasQuizzes;
     }
 
+    public boolean isHasVideoContent() { return hasVideoContent; }
+    public boolean isHasQuizzes() { return hasQuizzes; }
+
     @Override
     public String toString() {
         return "InteractiveEBook{" + super.toString() + ", hasVideoContent=" + hasVideoContent + ", hasQuizzes=" + hasQuizzes + "}";

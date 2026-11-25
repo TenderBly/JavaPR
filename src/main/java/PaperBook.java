@@ -19,6 +19,9 @@ public class PaperBook extends Book {
         this.weightKg = weightKg;
     }
 
+    public int getPageCount() { return pageCount; }
+    public double getWeightKg() { return weightKg; }
+
     @Override
     public String toString() {
         return "PaperBook{" + super.toString() + ", pageCount=" + pageCount + ", weightKg=" + weightKg + "'}";

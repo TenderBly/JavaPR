@@ -19,6 +19,9 @@ public class EBook extends Book {
         this.fileFormat = fileFormat;
     }
 
+    public double getFileSizeMB() { return fileSizeMB; }
+    public String getFileFormat() { return fileFormat; }
+
     @Override
     public String toString() {
         return "EBook{" + super.toString() + ", fileSizeMB=" + fileSizeMB + ", fileFormat='" + fileFormat + "'}";
