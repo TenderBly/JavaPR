@@ -1,7 +1,7 @@
 /**
  * Wrapper entry storing a Book object and its quantity in the library.
  */
-public class LibraryItem {
+public class LibraryItem implements Comparable<LibraryItem> {
     private Book book;
     private Integer quantity;
 
@@ -29,6 +29,14 @@ public class LibraryItem {
             throw new IllegalArgumentException("Quantity to add must be positive.");
         }
         this.quantity = Integer.valueOf(this.quantity.intValue() + amount);
+    }
+
+    @Override
+    public int compareTo(LibraryItem other) {
+        if (other == null) {
+            return 1;
+        }
+        return this.book.compareTo(other.book);
     }
 
     @Override
